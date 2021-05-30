@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import com.abdulradi.happypath.ForSyntax
+package com.abdulradi.happypath
 
-enum AppError derives ForSyntax:
-  case Err1(foo: String)
-  case Err2(bar: Int)
 
-@main def app(): Unit = 
+@main def forSyntaxExample(): Unit = 
+  enum AppError derives UnhappyCase:
+    case Err1(foo: String)
+    case Err2(bar: Int)
+    
   val intOrErr: AppError | Int = 42
   val strOrErr: AppError | String = "test"
 
@@ -28,3 +29,16 @@ enum AppError derives ForSyntax:
     i <- intOrErr 
     s <- strOrErr
   do println(s"$s $i")
+
+@main def throwablesExample(): Unit = 
+  import syntax.throwables.{*, given}
+
+  val res = for 
+    x <- catchNonFatal(1 / 1) 
+    y <- catchNonFatal(1 / 0)
+  yield x + y
+
+  println(res.fold(e => s"Error = $e", success => s"Res = $success"))
+  println(res.toEither)
+  println(res.toTry)
+  println(res.getOrThrow)

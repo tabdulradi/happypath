@@ -16,18 +16,17 @@
 
 package com.abdulradi.happypath
 
-open class ForSyntax[E <: Matchable]:
+class ErrorCase[E <: Throwable] extends UnhappyCase[E]:
   extension [A <: Matchable](a: E | A) 
-    inline def flatMap[B](f: A => E | B): E | B =
-      a match
-        case e: E => e
-        case a: A => f(a)
+    inline def getOrThrow: A = 
+       a match
+        case e: E => throw e
+        case a: A => a
 
-    inline def map[B](f: A => B): E | B =
-      flatMap(f)
+    inline def toTry: scala.util.Try[A] = 
+       a match
+        case e: E => scala.util.Failure(e)
+        case a: A => scala.util.Success(a)
 
-    inline def foreach(f: A => Any): Unit = 
-      flatMap(f)
-
-object ForSyntax:
-  def derived[E <: Matchable]: ForSyntax[E] = ForSyntax[E]
+object ErrorCase:
+  def derived[E <: Throwable]: ErrorCase[E] = ErrorCase[E]

@@ -5,9 +5,9 @@ Makes union types work with for-comprehensions (like scala.Either, but without t
 ## Usage
 
 ```scala
-import com.abdulradi.happypath.ForSyntax
+import com.abdulradi.happypath.UnhappyCase
 
-enum AppError derives ForSyntax:
+enum AppError derives UnhappyCase:
   case Err1(foo: String)
   case Err2(bar: Int)
 
