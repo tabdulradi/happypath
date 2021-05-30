@@ -15,12 +15,13 @@
  */
 
 inThisBuild(Seq(
-  name := "happypath",
-  description := "Makes union types as easy to deal with as scala.Either without the allocation cost",
-  baseVersion := "0.1",
+  organizationName := "happypath",
+  description      := "Makes union types as easy to deal with as scala.Either without the allocation cost",
+  homepage         := Some(url("https://github.com/tabdulradi/happypath")),
+  scmInfo          := Some(ScmInfo(url("https://github.com/tabdulradi/happypath"), "scm:git@github.com:tabdulradi/happypath.git")),
   startYear := Some(2021),
-  scalaVersion := "3.0.0-RC1",
-  crossScalaVersions := Seq("3.0.0-RC1"),
+
+  scalaVersion := "3.0.0",
 ))
 
 
@@ -29,5 +30,7 @@ lazy val core = (project in file("core"))
 
 lazy val root = (project in file("."))
   .aggregate(core)
-  .settings(name := "happypath")
-  .enablePlugins(NoPublishPlugin)
+  .settings(
+    name := "happypath",
+    publish / skip := true
+  )
