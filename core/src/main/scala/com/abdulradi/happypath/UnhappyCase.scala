@@ -16,61 +16,47 @@
 
 package com.abdulradi.happypath
 
-open class UnhappyCase[E <: Matchable] extends ForSyntax[E]:
-  extension [A <: Matchable](a: E | A) 
+import scala.reflect.TypeTest
+
+open class UnhappyCase[E](using E: TypeTest[E | Any, E]) extends ForSyntax[E]:
+  extension [A](aOrE: E | A) 
     inline def fold[B](inline fe: E => B, inline fa: A => B): B =
-      a match
+      aOrE match
         case e: E => fe(e)
-        case a: A => fa(a)
+        case _ => fa(aOrE.asInstanceOf[A])
 
     inline def mapError[E2](f: E => E2): E2 | A =
-      a match
-        case e: E => f(e)
-        case a: A => a
+      fold(f, identity)
 
     inline def biMap[E2, A2](fe: E => E2, fa: A => A2): E2 | A2 =
       fold(fe, fa)
 
     inline def orElse[EE >: E, AA >: A](fallback: => EE | AA): EE | AA =
-      a match
-        case e: E => fallback
-        case a: A => a
+      fold(_ => fallback, identity)
           
     inline def getOrElse[AA >: A](fallback: => AA): E | AA =
       orElse(fallback)
 
     inline def contains[AA >: A](elem: AA): Boolean =
-      a match
-        case e: E => false
-        case a: A => elem == a
+      fold(_ => false, elem == _)
 
     inline def forall(predicate: A => Boolean): Boolean =
-      a match
-        case e: E => true
-        case a: A => predicate(a)
+      fold(_ => true, predicate)
 
     inline def exists(predicate: A => Boolean): Boolean =
-      a match
-        case e: E => false
-        case a: A => predicate(a)
+      fold(_ => false, predicate)
 
     inline def filterOrElse[EE >: E](predicate: A => Boolean, fallback: => EE): EE | A =
-      a match
-        case e: E => e
-        case a: A => if predicate(a) then a else fallback
+      aOrE.flatMap(a => if predicate(a) then a else fallback)
     
     inline def toSeq: Seq[A] = 
-       a match
-        case e: E => Seq.empty
-        case a: A => Seq(a)
+      fold(_ => Seq.empty, Seq(_))
 
     inline def toEither: Either[E, A] = 
       fold(Left(_), Right(_))
     
     inline def toOption: Option[A] = 
-       a match
-        case e: E => None
-        case a: A => Some(a)
+      fold(_ => None, Some(_))
 
 object UnhappyCase:
-  def derived[E <: Matchable]: UnhappyCase[E] = UnhappyCase[E]
+  def derived[E](using E: TypeTest[E | Any, E]): UnhappyCase[E] = UnhappyCase[E]

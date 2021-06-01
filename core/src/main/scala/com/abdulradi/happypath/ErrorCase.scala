@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.abdulradi.happypath
 
-class ErrorCase[E <: Throwable] extends UnhappyCase[E]:
-  extension [A <: Matchable](a: E | A) 
+import scala.reflect.TypeTest
+
+class ErrorCase[E <: Throwable](using E: TypeTest[E | Any, E]) extends UnhappyCase[E]:
+  extension [A](aOrE: E | A) 
     inline def getOrThrow: A = 
-       a match
-        case e: E => throw e
-        case a: A => a
+      aOrE.fold(throw _, identity)
 
     inline def toTry: scala.util.Try[A] = 
-       a match
-        case e: E => scala.util.Failure(e)
-        case a: A => scala.util.Success(a)
+      aOrE.fold(scala.util.Failure(_), scala.util.Success(_))
 
 object ErrorCase:
-  def derived[E <: Throwable]: ErrorCase[E] = ErrorCase[E]
+  def derived[E <: Throwable](using E: TypeTest[E | Any, E]): ErrorCase[E] = ErrorCase[E]

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.abdulradi.happypath
 
 
@@ -41,4 +40,6 @@ package com.abdulradi.happypath
   println(res.fold(e => s"Error = $e", success => s"Res = $success"))
   println(res.toEither)
   println(res.toTry)
-  println(res.getOrThrow)
+  
+  try res.getOrThrow
+  catch case e => println(e)

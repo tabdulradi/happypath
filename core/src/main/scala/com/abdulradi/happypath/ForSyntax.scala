@@ -16,12 +16,14 @@
 
 package com.abdulradi.happypath
 
-open class ForSyntax[E <: Matchable]:
-  extension [A <: Matchable](a: E | A) 
+import scala.reflect.TypeTest
+
+open class ForSyntax[E](using E: TypeTest[E | Any, E]):
+  extension [A](aOrE: E | A)
     inline def flatMap[B](f: A => E | B): E | B =
-      a match
+      aOrE match
         case e: E => e
-        case a: A => f(a)
+        case _ => f(aOrE.asInstanceOf[A])
 
     inline def map[B](f: A => B): E | B =
       flatMap(f)
@@ -30,4 +32,4 @@ open class ForSyntax[E <: Matchable]:
       flatMap(f)
 
 object ForSyntax:
-  def derived[E <: Matchable]: ForSyntax[E] = ForSyntax[E]
+  def derived[E](using TypeTest[E | Any, E]): ForSyntax[E] = ForSyntax[E]
