@@ -21,7 +21,7 @@ inThisBuild(Seq(
   scmInfo          := Some(ScmInfo(url("https://github.com/tabdulradi/happypath"), "scm:git@github.com:tabdulradi/happypath.git")),
   startYear := Some(2021),
 
-  scalaVersion := "3.0.0",
+  scalaVersion := "3.1.0",
 ))
 
 
